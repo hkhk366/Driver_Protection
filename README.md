@@ -22,7 +22,9 @@ Assume malicious code want to change our memory data. The first step malicious c
 2.1.	Get original address of this function from ServiceDescriptorTable. And calculate its offset toward the base address.
 
 2.2.	mov ebx,original_address
+
 mov byte ptr ds:[ebx],0xE9//E9 means jmp mov eax,ourfunction_address
+
 mov DWORD ptr ds:[ebx+1],eax//+1 mean E9 already took 1 byte
 
 2.3.	When called NtOpenProcess(), our function will handle it.
@@ -30,6 +32,10 @@ mov DWORD ptr ds:[ebx+1],eax//+1 mean E9 already took 1 byte
 2.4.	If not authorized one attempt, our function will erase ProcessHandle and retn 0x10. 0x10 means original function has four parameters. If comes from authorized one, then do following.
 
 push	0C4h
+
 mov eax,original_address // add eax,5
+
 jmp eax
+
 push 0C4h is because original head of NtOpenProcess() is push 0C4h. Our jmp+address took 5 bytes.
+
